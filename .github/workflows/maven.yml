@@ -48,19 +48,18 @@ jobs:
           fi
 
           if [ "$JOB_STATUS" = "success" ]; then
-            STATUS_TEXT="CI passed"
+            STATUS_TEXT="✅ CI passed"
           else
-            STATUS_TEXT="CI failed"
+            STATUS_TEXT="❌ CI failed"
           fi
 
-          MESSAGE=$(printf '%s\n\nRepository: %s\nBranch: %s\nCommit: %s\nMessage: %s\nAuthor: %s\nRun: %s' \
+          MESSAGE=$(printf '%s\n\nRepository: %s\nBranch: %s\nCommit: %s\nMessage: %s\nAuthor: %s' \
             "$STATUS_TEXT" \
             "$GITHUB_REPOSITORY" \
             "$BRANCH_NAME" \
             "${COMMIT_SHA:0:7}" \
             "$COMMIT_MESSAGE" \
-            "$COMMIT_AUTHOR" \
-            "$RUN_URL")
+            "$COMMIT_AUTHOR")
 
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_ID}" \
