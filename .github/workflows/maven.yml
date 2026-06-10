@@ -41,6 +41,7 @@ jobs:
           COMMIT_AUTHOR: ${{ github.actor }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           BRANCH_NAME: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "Telegram secrets are not configured; skipping notification."
@@ -59,6 +60,20 @@ jobs:
           if [ -n "$PR_AUTHOR" ]; then
             AUTHOR_LABEL="Pull request by"
             AUTHOR_VALUE="$PR_AUTHOR"
+          fi
+
+          if [ -z "$PR_AUTHOR" ] && [[ "$COMMIT_MESSAGE" =~ Merge\ pull\ request\ \#([0-9]+) ]]; then
+            PR_NUMBER="${BASH_REMATCH[1]}"
+            MERGED_PR_AUTHOR=$(curl -sS \
+              -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github+json" \
+              "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" \
+              | jq -r '.user.login // empty')
+
+            if [ -n "$MERGED_PR_AUTHOR" ]; then
+              AUTHOR_LABEL="Pull request by"
+              AUTHOR_VALUE="$MERGED_PR_AUTHOR"
+            fi
           fi
 
           MESSAGE=$(printf '%s\n\nRepository: %s\nBranch: %s\nCommit: %s\nMessage: %s\n%s: %s' \
