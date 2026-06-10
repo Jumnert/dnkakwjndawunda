@@ -39,8 +39,8 @@ jobs:
           COMMIT_SHA: ${{ github.sha }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
           COMMIT_AUTHOR: ${{ github.actor }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           BRANCH_NAME: ${{ github.ref_name }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
             echo "Telegram secrets are not configured; skipping notification."
@@ -53,13 +53,22 @@ jobs:
             STATUS_TEXT="❌ Backend CI failed"
           fi
 
-          MESSAGE=$(printf '%s\n\nRepository: %s\nBranch: %s\nCommit: %s\nMessage: %s\nAuthor: %s' \
+          AUTHOR_LABEL="Author"
+          AUTHOR_VALUE="$COMMIT_AUTHOR"
+
+          if [ -n "$PR_AUTHOR" ]; then
+            AUTHOR_LABEL="Pull request by"
+            AUTHOR_VALUE="$PR_AUTHOR"
+          fi
+
+          MESSAGE=$(printf '%s\n\nRepository: %s\nBranch: %s\nCommit: %s\nMessage: %s\n%s: %s' \
             "$STATUS_TEXT" \
             "$GITHUB_REPOSITORY" \
             "$BRANCH_NAME" \
             "${COMMIT_SHA:0:7}" \
             "$COMMIT_MESSAGE" \
-            "$COMMIT_AUTHOR")
+            "$AUTHOR_LABEL" \
+            "$AUTHOR_VALUE")
 
           curl -sS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             -d chat_id="${TELEGRAM_CHAT_ID}" \
