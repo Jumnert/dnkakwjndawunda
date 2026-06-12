@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
