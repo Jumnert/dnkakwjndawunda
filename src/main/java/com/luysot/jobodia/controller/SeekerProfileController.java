@@ -2,6 +2,8 @@ package com.luysot.jobodia.controller;
 
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerProfileRequestDto;
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerProfileResponseDto;
+import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerSkillsRequestDto;
+import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerSkillsResponseDto;
 import com.luysot.jobodia.service.SeekerProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,11 @@ import java.io.IOException;
 @RequestMapping("/api/v1/seeker-profiles")
 public class SeekerProfileController {
     private final SeekerProfileService seekerProfileService;
+
+    @GetMapping
+    ResponseEntity<SeekerProfileResponseDto> myProfile(Authentication authentication){
+        return ResponseEntity.ok(seekerProfileService.myProfile(authentication.getName()));
+    }
 
     @PostMapping
     ResponseEntity<SeekerProfileResponseDto> createProfile(
@@ -32,5 +39,10 @@ public class SeekerProfileController {
             ) throws IOException {
         seekerProfileService.uploadProfilePicture(authentication.getName(),file);
         return ResponseEntity.ok("Uploaded");
+    }
+
+    @PostMapping("/skills")
+    ResponseEntity<SeekerSkillsResponseDto> addSeekerSkills(@RequestBody SeekerSkillsRequestDto dto, Authentication authentication){
+        return ResponseEntity.ok(seekerProfileService.addSeekerSkills(authentication.getName(),dto));
     }
 }

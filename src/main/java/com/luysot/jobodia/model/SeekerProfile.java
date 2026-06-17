@@ -4,6 +4,9 @@ import com.luysot.jobodia.model.enums.UserGender;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,4 +40,13 @@ public class SeekerProfile {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users user;
+
+    @ManyToMany
+    @JoinTable(
+            name = "seeker_skill",
+            joinColumns = @JoinColumn(name = "seeker_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private Set<Skills> skills = new HashSet<>();
+
 }
