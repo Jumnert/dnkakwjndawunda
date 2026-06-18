@@ -6,7 +6,7 @@ import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerSkillsRequestDto;
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerSkillsResponseDto;
 import com.luysot.jobodia.mapper.SeekerProfileMapper;
 import com.luysot.jobodia.mapper.SkillMapper;
-import com.luysot.jobodia.model.SeekerProfile;
+import com.luysot.jobodia.model.SeekerProfiles;
 import com.luysot.jobodia.model.Skills;
 import com.luysot.jobodia.model.Users;
 import com.luysot.jobodia.repository.SeekerProfileRepository;
@@ -19,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -48,7 +47,7 @@ public class SeekerProfileService {
     public SeekerSkillsResponseDto myProfile(String email){
         Users user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User with the following email is not found!"));
 
-        SeekerProfile seeker = seekerProfileRepository.findByUser(user).orElseThrow(()->new RuntimeException("User with the following email is not found!"));
+        SeekerProfiles seeker = seekerProfileRepository.findByUser(user).orElseThrow(()->new RuntimeException("User with the following email is not found!"));
 
 
         return SeekerSkillsResponseDto.builder()
@@ -73,14 +72,14 @@ public class SeekerProfileService {
             throw new RuntimeException("Profile already exists!");
         }
 
-        SeekerProfile seekerProfile = new SeekerProfile();
+        SeekerProfiles seekerProfiles = new SeekerProfiles();
 
-        seekerProfile.setPhoneNumber(request.phoneNumber());
-        seekerProfile.setGender(request.gender());
-        seekerProfile.setAddress(request.address());
-        seekerProfile.setUser(user);
+        seekerProfiles.setPhoneNumber(request.phoneNumber());
+        seekerProfiles.setGender(request.gender());
+        seekerProfiles.setAddress(request.address());
+        seekerProfiles.setUser(user);
 
-        SeekerProfile savedProfile = seekerProfileRepository.save(seekerProfile);
+        SeekerProfiles savedProfile = seekerProfileRepository.save(seekerProfiles);
 
         return seekerProfileMapper.toDto(savedProfile);
     }
@@ -88,7 +87,7 @@ public class SeekerProfileService {
     public void uploadProfilePicture(String email, MultipartFile file) throws IOException {
         Users user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User by the following email is not found!"));
 
-        SeekerProfile profile = seekerProfileRepository.findByUser(user).orElseThrow(()->new RuntimeException("User is not found"));
+        SeekerProfiles profile = seekerProfileRepository.findByUser(user).orElseThrow(()->new RuntimeException("User is not found"));
 
         String contentType = file.getContentType();
 
@@ -120,7 +119,7 @@ public class SeekerProfileService {
 
         Set<Skills> newSkills = new HashSet<>(skillsRepository.findAllById(dto.skillId()));
 
-        SeekerProfile seeker = seekerProfileRepository.findByUser(user).orElseThrow(() -> new UsernameNotFoundException("Email not found!!"));
+        SeekerProfiles seeker = seekerProfileRepository.findByUser(user).orElseThrow(() -> new UsernameNotFoundException("Email not found!!"));
 
         seeker.getSkills().addAll(newSkills);
 

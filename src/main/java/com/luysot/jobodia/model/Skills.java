@@ -21,5 +21,5 @@ public class Skills {
     private String skillName;
 
     @ManyToMany(mappedBy = "skills")
-    private Set<SeekerProfile> seekers = new HashSet<>();
+    private Set<SeekerProfiles> seekers = new HashSet<>();
 }

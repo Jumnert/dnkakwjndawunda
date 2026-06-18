@@ -1,13 +1,12 @@
 package com.luysot.jobodia.mapper;
 
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerProfileResponseDto;
-import com.luysot.jobodia.model.SeekerProfile;
-import com.luysot.jobodia.model.Users;
+import com.luysot.jobodia.model.SeekerProfiles;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SeekerProfileMapper {
-    public SeekerProfileResponseDto toDto(SeekerProfile profile){
+    public SeekerProfileResponseDto toDto(SeekerProfiles profile){
         return SeekerProfileResponseDto.builder()
                 .id(profile.getId())
                 .username(profile.getUser().getUsername())

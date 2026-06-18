@@ -91,5 +91,5 @@ public class Users implements UserDetails {
     }
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private SeekerProfile seekerProfile;
+    private SeekerProfiles seekerProfiles;
 }

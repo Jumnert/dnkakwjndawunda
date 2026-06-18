@@ -1,0 +1,44 @@
+package com.luysot.jobodia.model;
+
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
+
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Entity
+public class SeekerResumes {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String title;
+
+    @Column(name = "resume")
+    private String resumeUrl;
+    @Column(name = "resume_stored_name")
+    private String resumeStoredName;
+    @Column(name = "resume_orignal_name")
+    private String resumeOriginalName;
+    @Column(name = "resume_content_type")
+    private String resumeContentType;
+
+    @CreationTimestamp
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    private Timestamp updatedAt;
+
+    @ManyToOne
+    @JoinColumn(name = "seeker_id")
+    private SeekerProfiles seeker;
+}

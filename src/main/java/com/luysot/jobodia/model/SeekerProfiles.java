@@ -13,7 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-public class SeekerProfile {
+public class SeekerProfiles {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -49,4 +49,6 @@ public class SeekerProfile {
     )
     private Set<Skills> skills = new HashSet<>();
 
+    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SeekerResumes> resumes;
 }
