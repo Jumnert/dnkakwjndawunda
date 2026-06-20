@@ -85,7 +85,6 @@ public class SeekerResumeService {
         seekerResume.setResumeStoredName(storedName);
         seekerResume.setResumeContentType(contentType);
 
-        // FIX: link to seeker
         seekerResume.setSeeker(seekerProfiles);
 
         SeekerResumes saved =
@@ -114,6 +113,18 @@ public class SeekerResumeService {
                 .resumeUrl(resume.getResumeUrl())
                 .build())
                 .toList();
+    }
+
+    public SeekerResumeResponseDto findSeekerOwnResume(Long id,String email){
+        Users user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
+        SeekerProfiles seekerProfiles = seekerProfileRepository
+                .findByUser(user)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found!!"));
+        SeekerResumes resume = seekerResumesRepository.findByIdAndSeeker(id,seekerProfiles).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
+
+
+        return SeekerResumeResponseDto.builder().id(resume.getId()).title(resume.getTitle()).resumeUrl(resume.getResumeUrl()).build();
     }
 
 }

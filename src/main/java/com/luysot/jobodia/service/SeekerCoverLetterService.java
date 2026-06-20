@@ -120,4 +120,15 @@ public class SeekerCoverLetterService {
                 .toList();
     }
 
+    public SeekerCoverLetterResponseDto findSeekerOwnCoverLetter(Long id,String email){
+        Users user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
+        SeekerProfiles seekerProfiles = seekerProfileRepository
+                .findByUser(user)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException("User not found!!"));
+        SeekerCoverLetters coverLetter = seekerCoverLettersRepository.findByIdAndSeeker(id,seekerProfiles).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
+
+
+        return SeekerCoverLetterResponseDto.builder().id(coverLetter.getId()).title(coverLetter.getTitle()).coverLetterUrl(coverLetter.getCoverLetterUrl()).build();
+    }
 }

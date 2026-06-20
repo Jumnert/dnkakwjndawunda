@@ -10,4 +10,5 @@ import java.util.Optional;
 
 public interface SeekerResumesRepository extends JpaRepository<SeekerResumes, Long> {
     List<SeekerResumes> findBySeeker(SeekerProfiles seeker);
+    Optional<SeekerResumes> findByIdAndSeeker(Long id,SeekerProfiles seeker);
 }

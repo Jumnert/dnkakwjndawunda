@@ -1,6 +1,7 @@
 package com.luysot.jobodia.controller;
 
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerCoverLetterResponseDto;
+import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerResumeResponseDto;
 import com.luysot.jobodia.model.SeekerCoverLetters;
 import com.luysot.jobodia.service.SeekerCoverLetterService;
 import com.luysot.jobodia.service.SeekerResumeService;
@@ -36,5 +37,10 @@ public class SeekerCoverLetterController {
     @GetMapping("/me")
     ResponseEntity<List<SeekerCoverLetterResponseDto>> findAllSeekerOwnCoverLetter(Authentication authentication){
         return ResponseEntity.ok(seekerCoverLetterService.findAllSeekerOwnCoverLetter(authentication.getName()));
+    }
+
+    @GetMapping("/me/{id}")
+    ResponseEntity<SeekerCoverLetterResponseDto> findSeekerOwnCoverLetter(@PathVariable Long id, Authentication authentication){
+        return ResponseEntity.ok(seekerCoverLetterService.findSeekerOwnCoverLetter(id,authentication.getName()));
     }
 }

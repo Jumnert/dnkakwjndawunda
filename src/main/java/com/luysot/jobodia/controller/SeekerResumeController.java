@@ -35,4 +35,9 @@ public class SeekerResumeController {
     ResponseEntity<List<SeekerResumeResponseDto>> findAllSeekerOwnResume(Authentication authentication){
         return ResponseEntity.ok(seekerResumeService.findAllSeekerOwnResume(authentication.getName()));
     }
+
+    @GetMapping("/me/{id}")
+    ResponseEntity<SeekerResumeResponseDto> findSeekerOwnResume(@PathVariable Long id, Authentication authentication){
+        return ResponseEntity.ok(seekerResumeService.findSeekerOwnResume(id,authentication.getName()));
+    }
 }
