@@ -51,4 +51,7 @@ public class SeekerProfiles {
 
     @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<SeekerResumes> resumes;
+
+    @OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<SeekerCoverLetters> coverLetters;
 }

@@ -1,9 +1,12 @@
 package com.luysot.jobodia.service;
 
+import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerCoverLetterResponseDto;
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerResumeResponseDto;
+import com.luysot.jobodia.model.SeekerCoverLetters;
 import com.luysot.jobodia.model.SeekerProfiles;
 import com.luysot.jobodia.model.SeekerResumes;
 import com.luysot.jobodia.model.Users;
+import com.luysot.jobodia.repository.SeekerCoverLettersRepository;
 import com.luysot.jobodia.repository.SeekerProfileRepository;
 import com.luysot.jobodia.repository.SeekerResumesRepository;
 import com.luysot.jobodia.repository.UserRepository;
@@ -21,15 +24,15 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class SeekerResumeService {
-    private final SeekerResumesRepository seekerResumesRepository;
+public class SeekerCoverLetterService {
+    private final SeekerCoverLettersRepository seekerCoverLettersRepository;
     private final UserRepository userRepository;
     private final SeekerProfileRepository seekerProfileRepository;
     private static final List<String> ALLOWED_TYPES = List.of(
             "application/pdf"
     );
 
-    public void uploadSeekerResume(
+    public void uploadSeekerCoverLetter(
             String email,
             String title,
             MultipartFile file) throws IOException {
@@ -57,7 +60,7 @@ public class SeekerResumeService {
         }
 
         String uploadDir =
-                "uploads/seeker-resume/" + user.getUsername();
+                "uploads/seeker-cover-letter/" + user.getUsername();
 
         File dir = new File(uploadDir);
 
@@ -78,41 +81,42 @@ public class SeekerResumeService {
 
         file.transferTo(path);
 
-        SeekerResumes seekerResume = new SeekerResumes();
+        SeekerCoverLetters seekerCoverLetter = new SeekerCoverLetters();
 
-        seekerResume.setTitle(title);
-        seekerResume.setResumeOriginalName(file.getOriginalFilename());
-        seekerResume.setResumeStoredName(storedName);
-        seekerResume.setResumeContentType(contentType);
+        seekerCoverLetter.setTitle(title);
+        seekerCoverLetter.setCoverLetterOriginalName(file.getOriginalFilename());
+        seekerCoverLetter.setCoverLetterStoredName(storedName);
+        seekerCoverLetter.setCoverLetterContentType(contentType);
 
-        // FIX: link to seeker
-        seekerResume.setSeeker(seekerProfiles);
+        seekerCoverLetter.setSeeker(seekerProfiles);
 
-        SeekerResumes saved =
-                seekerResumesRepository.save(seekerResume);
+        SeekerCoverLetters saved =
+                seekerCoverLettersRepository.save(seekerCoverLetter);
 
-        saved.setResumeUrl(
+        // FIX: use resume ID instead of user ID
+        saved.setCoverLetterUrl(
                 "/api/v1/seeker-resume/"
                         + saved.getId()
                         + "/resume"
         );
 
-        seekerResumesRepository.save(saved);
+        seekerCoverLettersRepository.save(saved);
     }
 
-    public List<SeekerResumeResponseDto> findAllSeekerOwnResume(String email) {
+    public List<SeekerCoverLetterResponseDto> findAllSeekerOwnCoverLetter(String email) {
         Users user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
         SeekerProfiles seekerProfiles = seekerProfileRepository
                 .findByUser(user)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found!!"));
-        List<SeekerResumes> resumes = seekerResumesRepository.findBySeeker(seekerProfiles);
 
-        return resumes.stream().map(resume -> SeekerResumeResponseDto.builder()
-                .id(resume.getId())
-                .title(resume.getTitle())
-                .resumeUrl(resume.getResumeUrl())
-                .build())
+        List<SeekerCoverLetters> coverLetters = seekerCoverLettersRepository.findBySeeker(seekerProfiles);
+
+        return coverLetters.stream().map(coverLetter -> SeekerCoverLetterResponseDto.builder()
+                        .id(coverLetter.getId())
+                        .title(coverLetter.getTitle())
+                        .coverLetterUrl(coverLetter.getCoverLetterUrl())
+                        .build())
                 .toList();
     }
 
