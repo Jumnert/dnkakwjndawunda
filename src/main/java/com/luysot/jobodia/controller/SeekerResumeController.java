@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/seeker-resume")
+@RequestMapping("/api/v1/seeker-resumes")
 public class SeekerResumeController {
     private final SeekerResumeService seekerResumeService;
 

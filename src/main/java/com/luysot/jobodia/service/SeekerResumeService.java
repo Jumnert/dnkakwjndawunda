@@ -5,7 +5,7 @@ import com.luysot.jobodia.model.SeekerProfiles;
 import com.luysot.jobodia.model.SeekerResumes;
 import com.luysot.jobodia.model.Users;
 import com.luysot.jobodia.repository.SeekerProfileRepository;
-import com.luysot.jobodia.repository.SeekerResumesRepository;
+import com.luysot.jobodia.repository.SeekerResumeRepository;
 import com.luysot.jobodia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class SeekerResumeService {
-    private final SeekerResumesRepository seekerResumesRepository;
+    private final SeekerResumeRepository seekerResumeRepository;
     private final UserRepository userRepository;
     private final SeekerProfileRepository seekerProfileRepository;
     private static final List<String> ALLOWED_TYPES = List.of(
@@ -89,7 +89,7 @@ public class SeekerResumeService {
         seekerResume.setSeeker(seekerProfiles);
 
         SeekerResumes saved =
-                seekerResumesRepository.save(seekerResume);
+                seekerResumeRepository.save(seekerResume);
 
         saved.setResumeUrl(
                 "/api/v1/seeker-resume/"
@@ -97,7 +97,7 @@ public class SeekerResumeService {
                         + "/resume"
         );
 
-        seekerResumesRepository.save(saved);
+        seekerResumeRepository.save(saved);
     }
 
     public List<SeekerResumeResponseDto> findAllSeekerOwnResume(String email) {
@@ -106,7 +106,7 @@ public class SeekerResumeService {
                 .findByUser(user)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found!!"));
-        List<SeekerResumes> resumes = seekerResumesRepository.findBySeeker(seekerProfiles);
+        List<SeekerResumes> resumes = seekerResumeRepository.findBySeeker(seekerProfiles);
 
         return resumes.stream().map(resume -> SeekerResumeResponseDto.builder()
                 .id(resume.getId())
@@ -122,7 +122,7 @@ public class SeekerResumeService {
                 .findByUser(user)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found!!"));
-        SeekerResumes resume = seekerResumesRepository.findByIdAndSeeker(id,seekerProfiles).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
+        SeekerResumes resume = seekerResumeRepository.findByIdAndSeeker(id,seekerProfiles).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
 
 
         return SeekerResumeResponseDto.builder().id(resume.getId()).title(resume.getTitle()).resumeUrl(resume.getResumeUrl()).build();
@@ -135,6 +135,6 @@ public class SeekerResumeService {
                 .findByUser(user)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found!!"));
-        seekerResumesRepository.deleteByIdAndSeeker(id,seekerProfiles);
+        seekerResumeRepository.deleteByIdAndSeeker(id,seekerProfiles);
     }
 }

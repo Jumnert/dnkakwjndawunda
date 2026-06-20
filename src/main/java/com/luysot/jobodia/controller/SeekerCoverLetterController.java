@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/seeker-cover-letter")
+@RequestMapping("/api/v1/seeker-cover-letters")
 public class SeekerCoverLetterController {
     private final SeekerCoverLetterService seekerCoverLetterService;
 

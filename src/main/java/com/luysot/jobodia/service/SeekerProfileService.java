@@ -10,7 +10,7 @@ import com.luysot.jobodia.model.SeekerProfiles;
 import com.luysot.jobodia.model.Skills;
 import com.luysot.jobodia.model.Users;
 import com.luysot.jobodia.repository.SeekerProfileRepository;
-import com.luysot.jobodia.repository.SkillsRepository;
+import com.luysot.jobodia.repository.SkillRepository;
 import com.luysot.jobodia.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -38,7 +38,7 @@ public class SeekerProfileService {
     private final SeekerProfileRepository seekerProfileRepository;
     private final SeekerProfileMapper seekerProfileMapper;
     private final UserRepository userRepository;
-    private final SkillsRepository skillsRepository;
+    private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;
 
     private static final List<String> ALLOWED_TYPES = List.of(
@@ -145,7 +145,7 @@ public class SeekerProfileService {
     public SeekerSkillsResponseDto addSeekerSkills(String email, SeekerSkillsRequestDto dto) {
         Users user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("Email not found!!"));
 
-        Set<Skills> newSkills = new HashSet<>(skillsRepository.findAllById(dto.skillId()));
+        Set<Skills> newSkills = new HashSet<>(skillRepository.findAllById(dto.skillId()));
 
         SeekerProfiles seeker = seekerProfileRepository.findByUser(user).orElseThrow(() -> new UsernameNotFoundException("Email not found!!"));
 

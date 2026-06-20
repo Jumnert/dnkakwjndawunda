@@ -1,14 +1,11 @@
 package com.luysot.jobodia.service;
 
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerCoverLetterResponseDto;
-import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerResumeResponseDto;
 import com.luysot.jobodia.model.SeekerCoverLetters;
 import com.luysot.jobodia.model.SeekerProfiles;
-import com.luysot.jobodia.model.SeekerResumes;
 import com.luysot.jobodia.model.Users;
-import com.luysot.jobodia.repository.SeekerCoverLettersRepository;
+import com.luysot.jobodia.repository.SeekerCoverLetterRepository;
 import com.luysot.jobodia.repository.SeekerProfileRepository;
-import com.luysot.jobodia.repository.SeekerResumesRepository;
 import com.luysot.jobodia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +23,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class SeekerCoverLetterService {
-    private final SeekerCoverLettersRepository seekerCoverLettersRepository;
+    private final SeekerCoverLetterRepository seekerCoverLetterRepository;
     private final UserRepository userRepository;
     private final SeekerProfileRepository seekerProfileRepository;
     private static final List<String> ALLOWED_TYPES = List.of(
@@ -92,7 +89,7 @@ public class SeekerCoverLetterService {
         seekerCoverLetter.setSeeker(seekerProfiles);
 
         SeekerCoverLetters saved =
-                seekerCoverLettersRepository.save(seekerCoverLetter);
+                seekerCoverLetterRepository.save(seekerCoverLetter);
 
         saved.setCoverLetterUrl(
                 "/api/v1/seeker-resume/"
@@ -100,7 +97,7 @@ public class SeekerCoverLetterService {
                         + "/resume"
         );
 
-        seekerCoverLettersRepository.save(saved);
+        seekerCoverLetterRepository.save(saved);
     }
 
     public List<SeekerCoverLetterResponseDto> findAllSeekerOwnCoverLetter(String email) {
@@ -110,7 +107,7 @@ public class SeekerCoverLetterService {
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found!!"));
 
-        List<SeekerCoverLetters> coverLetters = seekerCoverLettersRepository.findBySeeker(seekerProfiles);
+        List<SeekerCoverLetters> coverLetters = seekerCoverLetterRepository.findBySeeker(seekerProfiles);
 
         return coverLetters.stream().map(coverLetter -> SeekerCoverLetterResponseDto.builder()
                         .id(coverLetter.getId())
@@ -126,7 +123,7 @@ public class SeekerCoverLetterService {
                 .findByUser(user)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found!!"));
-        SeekerCoverLetters coverLetter = seekerCoverLettersRepository.findByIdAndSeeker(id,seekerProfiles).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
+        SeekerCoverLetters coverLetter = seekerCoverLetterRepository.findByIdAndSeeker(id,seekerProfiles).orElseThrow(() -> new UsernameNotFoundException("User not found!!"));
 
 
         return SeekerCoverLetterResponseDto.builder().id(coverLetter.getId()).title(coverLetter.getTitle()).coverLetterUrl(coverLetter.getCoverLetterUrl()).build();
@@ -139,6 +136,6 @@ public class SeekerCoverLetterService {
                 .findByUser(user)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("User not found!!"));
-        seekerCoverLettersRepository.deleteByIdAndSeeker(id,seekerProfiles);
+        seekerCoverLetterRepository.deleteByIdAndSeeker(id,seekerProfiles);
     }
 }
