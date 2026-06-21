@@ -12,11 +12,13 @@ import com.luysot.jobodia.model.Users;
 import com.luysot.jobodia.repository.SeekerProfileRepository;
 import com.luysot.jobodia.repository.SkillRepository;
 import com.luysot.jobodia.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -26,10 +28,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,53 +69,48 @@ public class SeekerProfileService {
                 .build();
     }
 
-    public SeekerProfileResponseDto createProfile(SeekerProfileRequestDto request, String email){
+    @Transactional
+    public SeekerProfileResponseDto createProfile(SeekerProfileRequestDto request, MultipartFile file , String email) throws IOException{
         Users user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User by the following email is not found!"));
 
         if(seekerProfileRepository.findByUser(user).isPresent()){
             throw new RuntimeException("Profile already exists!");
         }
 
-        SeekerProfiles seekerProfiles = new SeekerProfiles();
+        SeekerProfiles seekerProfile = new SeekerProfiles();
 
-        seekerProfiles.setPhoneNumber(request.phoneNumber());
-        seekerProfiles.setGender(request.gender());
-        seekerProfiles.setAddress(request.address());
-        seekerProfiles.setUser(user);
+        seekerProfile.setPhoneNumber(request.phoneNumber());
+        seekerProfile.setGender(request.gender());
+        seekerProfile.setAddress(request.address());
+        seekerProfile.setUser(user);
 
-        SeekerProfiles savedProfile = seekerProfileRepository.save(seekerProfiles);
+        if(!file.isEmpty() && file != null){
+            String contentType = file.getContentType();
 
-        return seekerProfileMapper.toDto(savedProfile);
-    }
+            if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
+                throw new IllegalArgumentException("Only image files are allowed.");
+            }
 
-    public void uploadProfilePicture(String email, MultipartFile file) throws IOException {
-        Users user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User by the following email is not found!"));
+            String uploadDir = "uploads/seeker-profile/" + user.getUsername();
+            String originalName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+            File dir = new File(uploadDir);
 
-        SeekerProfiles profile = seekerProfileRepository.findByUser(user).orElseThrow(()->new RuntimeException("User is not found"));
+            if(!dir.exists()) dir.mkdirs();
 
-        String contentType = file.getContentType();
+            Path uploadPath = Paths.get(uploadDir);
+            String storedName = UUID.randomUUID() + "_" + "(" + user.getUsername() + ")" +originalName;
+            Path path = uploadPath.resolve(storedName);
 
-        if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
-            return;
+            file.transferTo(path);
+
+            seekerProfile.setProfilePictureContentType(contentType);
+            seekerProfile.setProfilePictureOriginalName(originalName);
+            seekerProfile.setProfilePictureStoredName(storedName);
+            seekerProfile.setProfilePictureUrl("/api/v1/seeker-profile/" + user.getId() + "/profile-picture");
         }
 
-        String uploadDir = "uploads/seeker-profile/" + user.getUsername();
-        File dir = new File(uploadDir);
-
-        if(!dir.exists()) dir.mkdirs();
-
-        Path uploadPath = Paths.get(uploadDir);
-        String storedName = UUID.randomUUID() + "_" + "(" + user.getUsername() + ")" +file.getOriginalFilename();
-        Path path = uploadPath.resolve(storedName);
-
-        file.transferTo(path);
-
-        profile.setProfilePictureContentType(contentType);
-        profile.setProfilePictureOriginalName(file.getOriginalFilename());
-        profile.setProfilePictureStoredName(storedName);
-        profile.setProfilePictureUrl("/api/v1/seeker-profile/" + user.getId() + "/profile-picture");
-
-        seekerProfileRepository.save(profile);
+        SeekerProfiles savedProfile = seekerProfileRepository.save(seekerProfile);
+        return seekerProfileMapper.toDto(savedProfile);
     }
 
     public Resource viewSeekerProfilePicture(String email) throws FileNotFoundException, MalformedURLException {

@@ -92,4 +92,7 @@ public class Users implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private SeekerProfiles seekerProfiles;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private EmployerProfiles employerProfiles;
 }

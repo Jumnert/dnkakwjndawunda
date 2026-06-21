@@ -36,19 +36,11 @@ public class SeekerProfileController {
 
     @PostMapping
     ResponseEntity<SeekerProfileResponseDto> createProfile(
-            @RequestBody SeekerProfileRequestDto dto,
-            Authentication authentication
-            ){
-        return ResponseEntity.ok(seekerProfileService.createProfile(dto,authentication.getName()));
-    }
-
-    @PostMapping("/picture")
-    ResponseEntity<?> uploadProfilePicture(
-            @RequestParam MultipartFile file,
+            @RequestPart(name = "profile") SeekerProfileRequestDto dto,
+            @RequestPart(name = "file",required = false) MultipartFile file,
             Authentication authentication
             ) throws IOException {
-        seekerProfileService.uploadProfilePicture(authentication.getName(),file);
-        return ResponseEntity.ok("Uploaded");
+        return ResponseEntity.ok(seekerProfileService.createProfile(dto,file,authentication.getName()));
     }
 
     @GetMapping("/picture")

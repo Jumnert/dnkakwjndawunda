@@ -25,7 +25,7 @@ public class SeekerProfiles {
     private String profilePictureUrl;
     @Column(name = "profile_picture_stored_name")
     private String profilePictureStoredName;
-    @Column(name = "profile_picture_orignal_name")
+    @Column(name = "profile_picture_original_name")
     private String profilePictureOriginalName;
     @Column(name = "profile_picture_content_type")
     private String profilePictureContentType;
