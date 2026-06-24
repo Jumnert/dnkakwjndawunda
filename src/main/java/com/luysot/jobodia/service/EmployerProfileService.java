@@ -9,12 +9,17 @@ import com.luysot.jobodia.repository.EmployerProfileRepository;
 import com.luysot.jobodia.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -80,4 +85,26 @@ public class EmployerProfileService {
         return employerProfileMapper.toDto(savedProfile);
     }
 
+    public Resource viewCompnayLogo(String email) throws FileNotFoundException, MalformedURLException {
+        Users user = userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("User by the following email is not found!"));
+        EmployerProfiles employerProfiles = employerProfileRepository.findByUser(user).orElseThrow(()->new RuntimeException("User by the following email is not found!"));
+
+        String storedName = employerProfiles.getCompanyLogoStoredName();
+
+
+        if (storedName == null || storedName.isBlank()) {
+            throw new FileNotFoundException("Profile picture not found");
+        }
+
+        Path path = Paths.get("uploads")
+                .resolve("employer-profile")
+                .resolve(user.getUsername())
+                .resolve(storedName);
+
+        if (!Files.exists(path)) {
+            throw new FileNotFoundException("Profile picture file not found");
+        }
+
+        return new UrlResource(path.toUri());
+    }
 }

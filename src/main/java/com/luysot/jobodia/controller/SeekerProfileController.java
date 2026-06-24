@@ -9,10 +9,12 @@ import com.luysot.jobodia.model.Users;
 import com.luysot.jobodia.repository.SeekerProfileRepository;
 import com.luysot.jobodia.repository.UserRepository;
 import com.luysot.jobodia.service.SeekerProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,11 +32,13 @@ public class SeekerProfileController {
     private final SeekerProfileRepository seekerProfileRepository;
 
     @GetMapping
+    @PreAuthorize("hasRole('SEEKER')")
     ResponseEntity<SeekerSkillsResponseDto> myProfile(Authentication authentication){
         return ResponseEntity.ok(seekerProfileService.myProfile(authentication.getName()));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('SEEKER')")
     ResponseEntity<SeekerProfileResponseDto> createProfile(
             @RequestPart(name = "profile") SeekerProfileRequestDto dto,
             @RequestPart(name = "file",required = false) MultipartFile file,
@@ -44,6 +48,7 @@ public class SeekerProfileController {
     }
 
     @GetMapping("/picture")
+    @PreAuthorize("hasRole('SEEKER')")
     ResponseEntity<Resource> viewProfilePicture(
             Authentication authentication
     ) throws MalformedURLException, FileNotFoundException {
@@ -65,6 +70,7 @@ public class SeekerProfileController {
     }
 
     @PostMapping("/skills")
+    @PreAuthorize("hasRole('SEEKER')")
     ResponseEntity<SeekerSkillsResponseDto> addSeekerSkills(@RequestBody SeekerSkillsRequestDto dto, Authentication authentication){
         return ResponseEntity.ok(seekerProfileService.addSeekerSkills(authentication.getName(),dto));
     }

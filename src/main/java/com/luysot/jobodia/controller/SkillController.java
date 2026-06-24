@@ -7,6 +7,7 @@ import com.luysot.jobodia.dto.SkillsDTOs.SkillRequestDto;
 import com.luysot.jobodia.dto.SkillsDTOs.SkillResponseDto;
 import com.luysot.jobodia.model.Skills;
 import com.luysot.jobodia.service.SkillService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

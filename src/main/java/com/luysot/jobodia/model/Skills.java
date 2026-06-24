@@ -22,4 +22,7 @@ public class Skills {
 
     @ManyToMany(mappedBy = "skills")
     private Set<SeekerProfiles> seekers = new HashSet<>();
+
+    @ManyToMany(mappedBy = "skills")
+    private Set<Jobs> jobs = new HashSet<>();
 }

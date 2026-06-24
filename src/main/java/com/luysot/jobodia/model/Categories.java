@@ -3,6 +3,9 @@ package com.luysot.jobodia.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,4 +19,7 @@ public class Categories {
 
     @Column(name = "category_name")
     private String categoryName;
+
+    @ManyToMany(mappedBy = "categories")
+    private Set<Jobs> jobs = new HashSet<>();
 }
