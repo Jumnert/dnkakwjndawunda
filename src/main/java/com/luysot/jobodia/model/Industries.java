@@ -3,6 +3,8 @@ package com.luysot.jobodia.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,4 +18,7 @@ public class Industries {
 
     @Column(name = "industry_name")
     private String industryName;
+
+    @OneToMany(mappedBy = "industry")
+    private Set<Jobs> job;
 }

@@ -3,6 +3,8 @@ package com.luysot.jobodia.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -37,4 +39,7 @@ public class EmployerProfiles {
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private Users user;
+
+    @OneToMany(mappedBy = "employer")
+    private Set<Jobs> jobs;
 }
