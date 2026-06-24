@@ -5,6 +5,7 @@ import com.luysot.jobodia.mapper.UserMapper;
 import com.luysot.jobodia.model.Users;
 import com.luysot.jobodia.repository.UserRepository;
 import com.luysot.jobodia.util.JwtUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,7 +26,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<String> authenticate(@RequestBody AuthRequest authRequest){
+    public ResponseEntity<String> authenticate(@Valid @RequestBody AuthRequest authRequest){
         Users isVerifiedUser = userRepository.findByEmail(authRequest.email())
                 .orElseThrow(()->new UsernameNotFoundException("User not found!"));
 

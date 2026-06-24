@@ -4,6 +4,7 @@ package com.luysot.jobodia.controller;
 import com.luysot.jobodia.dto.IndustryDTOs.IndustryRequestDto;
 import com.luysot.jobodia.dto.IndustryDTOs.IndustryResponseDto;
 import com.luysot.jobodia.service.IndustryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +28,12 @@ public class IndustryController {
     }
 
     @PostMapping
-    ResponseEntity<IndustryResponseDto> addIndustry(@RequestBody IndustryRequestDto dto){
+    ResponseEntity<IndustryResponseDto> addIndustry(@Valid @RequestBody IndustryRequestDto dto){
         return ResponseEntity.ok(industryService.addIndustry(dto));
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<IndustryResponseDto> updateIndustry(@PathVariable Long id,@RequestBody IndustryRequestDto dto){
+    ResponseEntity<IndustryResponseDto> updateIndustry(@PathVariable Long id, @Valid @RequestBody IndustryRequestDto dto){
         return ResponseEntity.ok(industryService.updateIndustry(id,dto));
     }
 

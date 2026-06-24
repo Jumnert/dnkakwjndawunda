@@ -5,6 +5,7 @@ import com.luysot.jobodia.dto.UsersDTOs.ResetPasswordRequest;
 import com.luysot.jobodia.dto.UsersDTOs.UserResponseDto;
 import com.luysot.jobodia.dto.UsersDTOs.VerifyUserDto;
 import com.luysot.jobodia.service.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +17,12 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    ResponseEntity<UserResponseDto> register(@RequestBody RegisterRequestDto dto){
+    ResponseEntity<UserResponseDto> register(@Valid @RequestBody RegisterRequestDto dto){
         return ResponseEntity.ok(userService.register(dto));
     }
 
     @PostMapping("/verify-otp")
-    void sendVerifyOtp(@RequestBody VerifyUserDto verifyUserDto){
+    void sendVerifyOtp(@Valid @RequestBody VerifyUserDto verifyUserDto){
         userService.verifyOtp(verifyUserDto.email(),verifyUserDto.otp());
     }
 
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+    public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         try {
             userService.resetPassword(
                     request.otp(),

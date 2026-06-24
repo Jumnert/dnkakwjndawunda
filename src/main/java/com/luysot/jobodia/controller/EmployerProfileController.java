@@ -3,6 +3,7 @@ package com.luysot.jobodia.controller;
 import com.luysot.jobodia.dto.EmployerProfileDTOs.EmployerProfileRequestDto;
 import com.luysot.jobodia.dto.EmployerProfileDTOs.EmployerProfileResponseDto;
 import com.luysot.jobodia.service.EmployerProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class EmployerProfileController {
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYER')")
     ResponseEntity<EmployerProfileResponseDto> createProfile(
-            @RequestPart(name = "profile") EmployerProfileRequestDto dto,
+            @Valid @RequestPart(name = "profile") EmployerProfileRequestDto dto,
             @RequestPart(name = "file",required = false) MultipartFile file,
             Authentication authentication
     ) throws IOException {
@@ -38,8 +39,4 @@ public class EmployerProfileController {
     ) throws MalformedURLException, FileNotFoundException {
         return ResponseEntity.ok(employerProfileService.viewCompnayLogo(authentication.getName()));
     }
-
-
 }
-
-

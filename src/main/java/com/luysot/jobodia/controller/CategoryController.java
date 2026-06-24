@@ -3,6 +3,7 @@ package com.luysot.jobodia.controller;
 import com.luysot.jobodia.dto.CategoryDTOs.CategoryRequestDto;
 import com.luysot.jobodia.dto.CategoryDTOs.CategoryResponseDto;
 import com.luysot.jobodia.service.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +27,12 @@ public class CategoryController {
     }
 
     @PostMapping
-    ResponseEntity<CategoryResponseDto> addCategory(@RequestBody CategoryRequestDto dto){
+    ResponseEntity<CategoryResponseDto> addCategory(@Valid @RequestBody CategoryRequestDto dto){
         return ResponseEntity.ok(categoryService.addCategory(dto));
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long id,@RequestBody CategoryRequestDto dto){
+    ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequestDto dto){
         return ResponseEntity.ok(categoryService.updateCategory(id,dto));
     }
 
