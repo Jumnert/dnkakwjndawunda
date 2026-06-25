@@ -4,7 +4,7 @@ import com.luysot.jobodia.dto.CategoryDTOs.CategoryRequestDto;
 import com.luysot.jobodia.dto.CategoryDTOs.CategoryResponseDto;
 import com.luysot.jobodia.mapper.CategoryMapper;
 import com.luysot.jobodia.model.Categories;
-import com.luysot.jobodia.repository.CategoriesRepository;
+import com.luysot.jobodia.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
-    private final CategoriesRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
 
     public CategoryResponseDto addCategory(CategoryRequestDto dto){

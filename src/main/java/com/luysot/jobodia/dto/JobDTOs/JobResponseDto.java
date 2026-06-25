@@ -80,7 +80,7 @@ public record JobResponseDto(
         Set<Long> categoriesId,
         Set<Long> skillsId,
 
-        List<Long> industriesId,
+        Long industriesId,
 
         EmployerProfileResponseDto employer
 ) {
