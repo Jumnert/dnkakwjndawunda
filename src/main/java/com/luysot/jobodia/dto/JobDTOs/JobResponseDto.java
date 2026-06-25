@@ -1,5 +1,6 @@
 package com.luysot.jobodia.dto.JobDTOs;
 
+import com.luysot.jobodia.dto.EmployerProfileDTOs.EmployerProfileResponseDto;
 import com.luysot.jobodia.model.enums.JobGender;
 import com.luysot.jobodia.model.enums.JobLevel;
 import com.luysot.jobodia.model.enums.JobSite;
@@ -81,6 +82,6 @@ public record JobResponseDto(
 
         List<Long> industriesId,
 
-        Long employerId
+        EmployerProfileResponseDto employer
 ) {
 }

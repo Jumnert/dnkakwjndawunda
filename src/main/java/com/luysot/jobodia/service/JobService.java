@@ -62,4 +62,25 @@ public class JobService {
         Jobs savedJob = jobRepository.save(job);
         return jobMapper.toDto(savedJob);
     }
+
+    public JobResponseDto findJob(Long id){
+        Jobs job = jobRepository.findById(id).orElseThrow(()->new RuntimeException("Job not found"));
+        return jobMapper.toDto(job);
+    }
+
+    public Set<JobResponseDto> findOwnEmployerJobs(String email){
+        Users user = userRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User not found!!"));
+        EmployerProfiles employer = employerProfileRepository.findByUser(user).orElseThrow(()->new UsernameNotFoundException("User not found!!"));
+
+        Set<Jobs> job = jobRepository.findByEmployer(employer);
+        return job.stream().map(jobMapper::toDto).collect(Collectors.toSet());
+    }
+
+    public JobResponseDto findOwnEmployerJob(String email, Long id){
+        Users user = userRepository.findByEmail(email).orElseThrow(()->new UsernameNotFoundException("User not found!!"));
+        EmployerProfiles employer = employerProfileRepository.findByUser(user).orElseThrow(()->new UsernameNotFoundException("User not found!!"));
+
+        Jobs job = jobRepository.findByIdAndEmployer(id,employer).orElseThrow(()->new RuntimeException("Job not found"));
+        return jobMapper.toDto(job);
+    }
 }

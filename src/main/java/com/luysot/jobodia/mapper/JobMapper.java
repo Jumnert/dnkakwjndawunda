@@ -1,16 +1,20 @@
 package com.luysot.jobodia.mapper;
 
 import com.luysot.jobodia.dto.JobDTOs.JobResponseDto;
-import com.luysot.jobodia.model.Categories;
-import com.luysot.jobodia.model.Jobs;
-import com.luysot.jobodia.model.Skills;
+import com.luysot.jobodia.model.*;
+import com.luysot.jobodia.repository.EmployerProfileRepository;
+import com.luysot.jobodia.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class JobMapper {
+    private final EmployerProfileMapper employerProfileMapper;
 
     public JobResponseDto toDto(Jobs job){
         return JobResponseDto.builder()
@@ -35,7 +39,7 @@ public class JobMapper {
                 .categoriesId(job.getCategories().stream().map(Categories::getId).collect(Collectors.toSet()))
                 .skillsId(job.getSkills().stream().map(Skills::getId).collect(Collectors.toSet()))
                 .industriesId(List.of(job.getIndustry().getId()))
-                .employerId(job.getEmployer().getId())
+                .employer(employerProfileMapper.toDto(job.getEmployer()))
                 .build();
     }
 }
