@@ -3,6 +3,7 @@ package com.luysot.jobodia.dto.JobDTOs;
 import com.luysot.jobodia.model.Categories;
 import com.luysot.jobodia.model.enums.JobGender;
 import com.luysot.jobodia.model.enums.JobLevel;
+import com.luysot.jobodia.model.enums.JobSite;
 import com.luysot.jobodia.model.enums.JobTime;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
@@ -55,6 +56,9 @@ public record JobRequestDto(
 
         @NotNull(message = "Job gender is required")
         JobGender jobGender,
+
+        @NotNull(message = "Job site is required")
+        JobSite jobSite,
 
         @Min(value = 0, message = "Years of experience cannot be negative")
         Long yearsOfExperience,

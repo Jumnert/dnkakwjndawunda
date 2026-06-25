@@ -48,6 +48,7 @@ public class JobService {
         job.setJobType(request.jobType());
         job.setJobLevel(request.jobLevel());
         job.setJobGender(request.jobGender());
+        job.setJobSite(request.jobSite());
         job.setYearsOfExperience(request.yearsOfExperience());
         job.setLanguage(request.languages());
         job.setQualification(request.qualifications());

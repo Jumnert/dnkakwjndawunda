@@ -26,6 +26,7 @@ public class JobMapper {
                 .jobType(job.getJobType())
                 .jobLevel(job.getJobLevel())
                 .jobGender(job.getJobGender())
+                .jobSite(job.getJobSite())
                 .yearsOfExperience(job.getYearsOfExperience())
                 .languages(job.getLanguage())
                 .qualifications(job.getQualification())
