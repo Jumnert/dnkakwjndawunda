@@ -63,7 +63,7 @@ public class EmployerProfileService {
                 throw new IllegalArgumentException("Only image files are allowed.");
             }
 
-            String uploadDir = "uploads/employer-profile/" + user.getUsername();
+            String uploadDir = "uploads/employer-profiles/" + user.getUsername();
             String originalName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
             File dir = new File(uploadDir);
 
@@ -78,7 +78,7 @@ public class EmployerProfileService {
             employerProfile.setCompanyLogoContentType(contentType);
             employerProfile.setCompanyLogoOriginalName(originalName);
             employerProfile.setCompanyLogoStoredName(storedName);
-            employerProfile.setCompanyLogoUrl("/api/v1/employer-profile/" + user.getId() + "/company-logo");
+            employerProfile.setCompanyLogoUrl("/api/v1/employer-profiles/" + user.getId() + "/company-logo");
         }
 
         EmployerProfiles savedProfile = employerProfileRepository.save(employerProfile);

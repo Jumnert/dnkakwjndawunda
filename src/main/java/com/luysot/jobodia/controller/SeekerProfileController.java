@@ -40,7 +40,7 @@ public class SeekerProfileController {
     @PostMapping
     @PreAuthorize("hasRole('SEEKER')")
     ResponseEntity<SeekerProfileResponseDto> createProfile(
-            @RequestPart(name = "profile") SeekerProfileRequestDto dto,
+            @Valid @RequestPart(name = "profile") SeekerProfileRequestDto dto,
             @RequestPart(name = "file",required = false) MultipartFile file,
             Authentication authentication
             ) throws IOException {
@@ -71,7 +71,7 @@ public class SeekerProfileController {
 
     @PostMapping("/skills")
     @PreAuthorize("hasRole('SEEKER')")
-    ResponseEntity<SeekerSkillsResponseDto> addSeekerSkills(@RequestBody SeekerSkillsRequestDto dto, Authentication authentication){
+    ResponseEntity<SeekerSkillsResponseDto> addSeekerSkills(@Valid @RequestBody SeekerSkillsRequestDto dto, Authentication authentication){
         return ResponseEntity.ok(seekerProfileService.addSeekerSkills(authentication.getName(),dto));
     }
 }

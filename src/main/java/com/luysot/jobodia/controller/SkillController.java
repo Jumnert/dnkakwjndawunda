@@ -23,7 +23,7 @@ public class SkillController {
     private final SkillService skillService;
 
     @PostMapping
-    ResponseEntity<SkillResponseDto> addSkill(@RequestBody SkillRequestDto dto){
+    ResponseEntity<SkillResponseDto> addSkill(@Valid @RequestBody SkillRequestDto dto){
         return ResponseEntity.ok(skillService.addSkill(dto));
     }
 

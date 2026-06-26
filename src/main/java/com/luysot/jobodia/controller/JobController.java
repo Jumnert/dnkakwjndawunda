@@ -4,6 +4,7 @@ import com.luysot.jobodia.dto.JobDTOs.JobRequestDto;
 import com.luysot.jobodia.dto.JobDTOs.JobResponseDto;
 import com.luysot.jobodia.model.Jobs;
 import com.luysot.jobodia.service.JobService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,13 +21,13 @@ public class JobController {
 
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYER')")
-    ResponseEntity<JobResponseDto> addJob(@RequestBody JobRequestDto request, Authentication authentication){
+    ResponseEntity<JobResponseDto> addJob(@Valid @RequestBody JobRequestDto request, Authentication authentication){
         return ResponseEntity.ok(jobService.addJob(authentication.getName(),request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('EMPLOYER')")
-    ResponseEntity<JobResponseDto> updateJob(@PathVariable Long id,@RequestBody JobRequestDto request, Authentication authentication){
+    ResponseEntity<JobResponseDto> updateJob(@Valid @PathVariable Long id,@RequestBody JobRequestDto request, Authentication authentication){
         return ResponseEntity.ok(jobService.updateJob(id,request,authentication.getName()));
     }
 
