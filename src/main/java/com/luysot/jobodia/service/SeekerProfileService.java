@@ -84,14 +84,14 @@ public class SeekerProfileService {
         seekerProfile.setAddress(request.address());
         seekerProfile.setUser(user);
 
-        if(!file.isEmpty() && file != null){
+        if(file != null && !file.isEmpty()){
             String contentType = file.getContentType();
 
             if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
                 throw new IllegalArgumentException("Only image files are allowed.");
             }
 
-            String uploadDir = "uploads/seeker-profile/" + user.getUsername();
+            String uploadDir = "uploads/seeker-profiles/" + user.getUsername();
             String originalName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
             File dir = new File(uploadDir);
 
@@ -106,7 +106,7 @@ public class SeekerProfileService {
             seekerProfile.setProfilePictureContentType(contentType);
             seekerProfile.setProfilePictureOriginalName(originalName);
             seekerProfile.setProfilePictureStoredName(storedName);
-            seekerProfile.setProfilePictureUrl("/api/v1/seeker-profile/" + user.getId() + "/profile-picture");
+            seekerProfile.setProfilePictureUrl("/api/v1/seeker-profiles/" + user.getId() + "/profile-picture");
         }
 
         SeekerProfiles savedProfile = seekerProfileRepository.save(seekerProfile);
@@ -125,7 +125,7 @@ public class SeekerProfileService {
         }
 
         Path path = Paths.get("uploads")
-                .resolve("seeker-profile")
+                .resolve("seeker-profiles")
                 .resolve(user.getUsername())
                 .resolve(storedName);
 
