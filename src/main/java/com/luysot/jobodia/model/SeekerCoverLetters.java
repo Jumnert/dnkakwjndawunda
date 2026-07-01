@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -38,4 +39,7 @@ public class SeekerCoverLetters {
     @ManyToOne
     @JoinColumn(name = "seeker_id")
     private SeekerProfiles seeker;
+
+    @OneToMany(mappedBy = "coverLetter", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Applications> applications;
 }

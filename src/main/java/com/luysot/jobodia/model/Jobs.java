@@ -116,4 +116,7 @@ public class Jobs {
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
     private Set<Skills> skills = new HashSet<>();
+
+    @OneToMany(mappedBy = "job", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Applications> applications;
 }
