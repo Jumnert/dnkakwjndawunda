@@ -2,10 +2,12 @@ package com.luysot.jobodia.service;
 
 import com.luysot.jobodia.dto.JobDTOs.JobRequestDto;
 import com.luysot.jobodia.dto.JobDTOs.JobResponseDto;
+import com.luysot.jobodia.dto.JobDTOs.UpdateJobStatusRequestDto;
 import com.luysot.jobodia.mapper.JobMapper;
 import com.luysot.jobodia.model.*;
 import com.luysot.jobodia.model.enums.JobLevel;
 import com.luysot.jobodia.model.enums.JobSite;
+import com.luysot.jobodia.model.enums.JobStatus;
 import com.luysot.jobodia.model.enums.JobTime;
 import com.luysot.jobodia.exception.DuplicateResourceException;
 import com.luysot.jobodia.exception.InvalidRequestException;
@@ -58,6 +60,7 @@ public class JobService {
         job.setJobLevel(request.jobLevel());
         job.setJobGender(request.jobGender());
         job.setJobSite(request.jobSite());
+        job.setStatus(JobStatus.OPEN);
         job.setYearsOfExperience(request.yearsOfExperience());
         job.setLanguage(request.languages());
         job.setQualification(request.qualifications());
@@ -73,7 +76,7 @@ public class JobService {
     }
 
     public JobResponseDto updateJob(Long id, JobRequestDto request, String email){
-        Jobs existingJob = jobMapper.toEntity(findOwnEmployerJob(email,id));
+        Jobs existingJob = findOwnEmployerJobEntity(email,id);
         Set<Categories> categories = loadCategories(request.categoriesId());
         Set<Skills> skills = loadSkills(request.skillsId());
 
@@ -92,6 +95,7 @@ public class JobService {
         existingJob.setJobLevel(request.jobLevel());
         existingJob.setJobGender(request.jobGender());
         existingJob.setJobSite(request.jobSite());
+        existingJob.setStatus(existingJob.getStatus() == null ? JobStatus.DRAFT : existingJob.getStatus());
         existingJob.setYearsOfExperience(request.yearsOfExperience());
         existingJob.setLanguage(request.languages());
         existingJob.setQualification(request.qualifications());
@@ -108,9 +112,29 @@ public class JobService {
     @Transactional
     public void deleteJob(Long id, String email){
         EmployerProfiles employer = findEmployerByUser(findUserByEmail(email));
-        findOwnEmployerJob(email, id);
+        findOwnEmployerJobEntity(email, id);
         jobRepository.deleteByIdAndEmployer(id,employer);
     }
+
+    public JobResponseDto updateJobStatus(Long id, UpdateJobStatusRequestDto request, String email) {
+        Jobs job = findOwnEmployerJobEntity(email, id);
+        JobStatus nextStatus = request.status();
+
+        if (!canTransition(job.getStatus(), nextStatus)) {
+            throw new InvalidRequestException("Invalid job status transition from " + job.getStatus() + " to " + nextStatus);
+        }
+
+        job.setStatus(nextStatus);
+        return jobMapper.toDto(jobRepository.save(job));
+    }
+
+//    public JobResponseDto publishJob(Long id, String email) {
+//        return updateJobStatus(id, new UpdateJobStatusRequestDto(JobStatus.OPEN), email);
+//    }
+//
+//    public JobResponseDto archiveJob(Long id, String email) {
+//        return updateJobStatus(id, new UpdateJobStatusRequestDto(JobStatus.ARCHIVED), email);
+//    }
 
     public Page<JobResponseDto> findJobs(Pageable pageable){
         return jobRepository.findAll(pageable).map(jobMapper::toDto);
@@ -176,10 +200,12 @@ public class JobService {
     }
 
     public JobResponseDto findOwnEmployerJob(String email, Long id){
-        EmployerProfiles employer = findEmployerByUser(findUserByEmail(email));
+        return jobMapper.toDto(findOwnEmployerJobEntity(email, id));
+    }
 
-        Jobs job = jobRepository.findByIdAndEmployer(id,employer).orElseThrow(()->new ResourceNotFoundException("Job not found"));
-        return jobMapper.toDto(job);
+    private Jobs findOwnEmployerJobEntity(String email, Long id) {
+        EmployerProfiles employer = findEmployerByUser(findUserByEmail(email));
+        return jobRepository.findByIdAndEmployer(id,employer).orElseThrow(()->new ResourceNotFoundException("Job not found"));
     }
 
     private Users findUserByEmail(String email) {
@@ -215,5 +241,19 @@ public class JobService {
         if (!missingIds.isEmpty()) {
             throw new InvalidRequestException("Invalid " + label.toLowerCase() + " id(s): " + missingIds);
         }
+    }
+
+    private boolean canTransition(JobStatus current, JobStatus next) {
+        if (current == null) {
+            current = JobStatus.DRAFT;
+        }
+
+        return switch (current) {
+            case DRAFT -> next == JobStatus.OPEN || next == JobStatus.ARCHIVED;
+            case OPEN -> next == JobStatus.PAUSED || next == JobStatus.CLOSED || next == JobStatus.ARCHIVED;
+            case PAUSED -> next == JobStatus.OPEN || next == JobStatus.CLOSED || next == JobStatus.ARCHIVED;
+            case CLOSED -> next == JobStatus.ARCHIVED;
+            case ARCHIVED -> false;
+        };
     }
 }

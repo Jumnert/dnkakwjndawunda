@@ -4,6 +4,7 @@ import com.luysot.jobodia.dto.EmployerProfileDTOs.EmployerProfileResponseDto;
 import com.luysot.jobodia.model.enums.JobGender;
 import com.luysot.jobodia.model.enums.JobLevel;
 import com.luysot.jobodia.model.enums.JobSite;
+import com.luysot.jobodia.model.enums.JobStatus;
 import com.luysot.jobodia.model.enums.JobTime;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -61,6 +62,9 @@ public record JobResponseDto(
 
         @NotNull(message = "Job site is required")
         JobSite jobSite,
+
+        @NotNull(message = "Job status is required")
+        JobStatus status,
 
         @Min(value = 0, message = "Years of experience cannot be negative")
         Long yearsOfExperience,

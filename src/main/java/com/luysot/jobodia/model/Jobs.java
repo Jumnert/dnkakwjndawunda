@@ -4,6 +4,7 @@ import com.luysot.jobodia.model.enums.JobGender;
 import com.luysot.jobodia.model.enums.JobLevel;
 import com.luysot.jobodia.model.enums.JobSite;
 import com.luysot.jobodia.model.enums.JobTime;
+import com.luysot.jobodia.model.enums.JobStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -71,6 +72,10 @@ public class Jobs {
     @Column(name = "job_site")
     @Enumerated(value = EnumType.STRING)
     private JobSite jobSite;
+
+    @Column(name = "job_status")
+    @Enumerated(value = EnumType.STRING)
+    private JobStatus status = JobStatus.DRAFT;
 
     @Column(name = "years_of_experience")
     private Long yearsOfExperience;

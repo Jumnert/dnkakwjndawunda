@@ -86,12 +86,68 @@ public class EmployerProfileService {
         EmployerProfiles savedProfile = employerProfileRepository.save(employerProfile);
 
         savedProfile.setCompanyLogoUrl(
-                "/api/v1/employer-profiles/" +
-                        savedProfile.getId() +
-                        "/company-logo"
+                "/api/v1/employer-profiles/me/logo"
         );
 
         employerProfileRepository.save(savedProfile);
+        return employerProfileMapper.toDto(savedProfile);
+    }
+
+    public EmployerProfiles findOwnProfileEntity(String email) {
+        Users user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        return employerProfileRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Employer profile not found"));
+    }
+
+    public EmployerProfileResponseDto findOwnProfile(String email) {
+        EmployerProfiles profile = findOwnProfileEntity(email);
+        if (profile.getCompanyLogoStoredName() != null && !"/api/v1/employer-profiles/me/logo".equals(profile.getCompanyLogoUrl())) {
+            profile.setCompanyLogoUrl("/api/v1/employer-profiles/me/logo");
+            profile = employerProfileRepository.save(profile);
+        }
+        return employerProfileMapper.toDto(profile);
+    }
+
+    @Transactional
+    public EmployerProfileResponseDto updateOwnProfile(EmployerProfileRequestDto request, MultipartFile file, String email) throws IOException {
+        Users user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        EmployerProfiles employerProfile = employerProfileRepository.findByUser(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Employer profile not found"));
+
+        employerProfile.setCompanyName(request.companyName());
+        employerProfile.setPhoneNumber(request.phoneNumber());
+        employerProfile.setLocation(request.location());
+        employerProfile.setDescription(request.description());
+
+        if (file != null && !file.isEmpty()) {
+            String contentType = file.getContentType();
+            if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
+                throw new InvalidRequestException("Only image files are allowed.");
+            }
+
+            String uploadDir = "uploads/employer-profiles/" + user.getUsername();
+            String originalName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            Path uploadPath = Paths.get(uploadDir);
+            String storedName = UUID.randomUUID() + "_(" + user.getUsername() + ")_" + originalName;
+            Path path = uploadPath.resolve(storedName);
+            file.transferTo(path);
+
+            employerProfile.setCompanyLogoContentType(contentType);
+            employerProfile.setCompanyLogoOriginalName(originalName);
+            employerProfile.setCompanyLogoStoredName(storedName);
+        }
+
+        EmployerProfiles savedProfile = employerProfileRepository.save(employerProfile);
+        if (savedProfile.getCompanyLogoStoredName() != null) {
+            savedProfile.setCompanyLogoUrl("/api/v1/employer-profiles/me/logo");
+            savedProfile = employerProfileRepository.save(savedProfile);
+        }
+
         return employerProfileMapper.toDto(savedProfile);
     }
 
@@ -112,6 +168,24 @@ public class EmployerProfileService {
 
         if (!Files.exists(path)) {
             throw new FileNotFoundException("Profile picture file not found");
+        }
+
+        return new UrlResource(path.toUri());
+    }
+
+    public Resource loadOwnCompanyLogo(String email) throws FileNotFoundException, MalformedURLException {
+        EmployerProfiles employerProfiles = findOwnProfileEntity(email);
+        if (employerProfiles.getCompanyLogoStoredName() == null || employerProfiles.getCompanyLogoStoredName().isBlank()) {
+            throw new FileNotFoundException("Company logo not found");
+        }
+
+        Path path = Paths.get("uploads")
+                .resolve("employer-profiles")
+                .resolve(employerProfiles.getUser().getUsername())
+                .resolve(employerProfiles.getCompanyLogoStoredName());
+
+        if (!Files.exists(path)) {
+            throw new FileNotFoundException("Company logo file not found");
         }
 
         return new UrlResource(path.toUri());

@@ -2,11 +2,14 @@ package com.luysot.jobodia.controller;
 
 import com.luysot.jobodia.dto.EmployerProfileDTOs.EmployerProfileRequestDto;
 import com.luysot.jobodia.dto.EmployerProfileDTOs.EmployerProfileResponseDto;
+import com.luysot.jobodia.model.EmployerProfiles;
 import com.luysot.jobodia.service.EmployerProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,11 +36,30 @@ public class EmployerProfileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(employerProfileService.createProfile(dto,file,authentication.getName()));
     }
 
-//    @PreAuthorize("hasRole('EMPLOYER')")
-//    @GetMapping("/company-logo")
-//    ResponseEntity<Resource> companyProfile(
-//            Authentication authentication
-//    ) throws MalformedURLException, FileNotFoundException {
-//        return ResponseEntity.ok(employerProfileService.viewCompnayLogo(authentication.getName()));
-//    }
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    ResponseEntity<EmployerProfileResponseDto> myProfile(Authentication authentication) {
+        return ResponseEntity.ok(employerProfileService.findOwnProfile(authentication.getName()));
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    ResponseEntity<EmployerProfileResponseDto> updateMyProfile(
+            @Valid @RequestPart(name = "profile") EmployerProfileRequestDto dto,
+            @RequestPart(name = "file", required = false) MultipartFile file,
+            Authentication authentication
+    ) throws IOException {
+        return ResponseEntity.ok(employerProfileService.updateOwnProfile(dto, file, authentication.getName()));
+    }
+
+    @GetMapping("/me/logo")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    ResponseEntity<Resource> myCompanyLogo(Authentication authentication) throws MalformedURLException, FileNotFoundException {
+        EmployerProfiles profile = employerProfileService.findOwnProfileEntity(authentication.getName());
+        Resource resource = employerProfileService.loadOwnCompanyLogo(authentication.getName());
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(profile.getCompanyLogoContentType()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline")
+                .body(resource);
+    }
 }

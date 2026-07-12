@@ -2,6 +2,7 @@ package com.luysot.jobodia.controller;
 
 import com.luysot.jobodia.dto.JobDTOs.JobRequestDto;
 import com.luysot.jobodia.dto.JobDTOs.JobResponseDto;
+import com.luysot.jobodia.dto.JobDTOs.UpdateJobStatusRequestDto;
 import com.luysot.jobodia.model.enums.JobLevel;
 import com.luysot.jobodia.model.enums.JobSite;
 import com.luysot.jobodia.model.enums.JobTime;
@@ -79,6 +80,34 @@ public class JobController {
     ResponseEntity<JobResponseDto> findJob(@PathVariable @Positive(message = "Job id must be positive") Long id){
         return ResponseEntity.ok(jobService.findJob(id));
     }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    ResponseEntity<JobResponseDto> updateJobStatus(
+            @PathVariable @Positive(message = "Job id must be positive") Long id,
+            @Valid @RequestBody UpdateJobStatusRequestDto request,
+            Authentication authentication
+    ) {
+        return ResponseEntity.ok(jobService.updateJobStatus(id, request, authentication.getName()));
+    }
+
+//    @PostMapping("/{id}/publish")
+//    @PreAuthorize("hasRole('EMPLOYER')")
+//    ResponseEntity<JobResponseDto> publishJob(
+//            @PathVariable @Positive(message = "Job id must be positive") Long id,
+//            Authentication authentication
+//    ) {
+//        return ResponseEntity.ok(jobService.publishJob(id, authentication.getName()));
+//    }
+//
+//    @PostMapping("/{id}/archive")
+//    @PreAuthorize("hasRole('EMPLOYER')")
+//    ResponseEntity<JobResponseDto> archiveJob(
+//            @PathVariable @Positive(message = "Job id must be positive") Long id,
+//            Authentication authentication
+//    ) {
+//        return ResponseEntity.ok(jobService.archiveJob(id, authentication.getName()));
+//    }
 
 
     @GetMapping("/me")

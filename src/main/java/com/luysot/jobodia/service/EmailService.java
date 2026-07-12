@@ -71,4 +71,14 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    public void sendApplicationNotification(String toEmail, String subject, String messageBody) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(FROM_EMAIL);
+        message.setTo(toEmail);
+        message.setSubject(subject);
+        message.setText(messageBody);
+        message.setSentDate(new java.util.Date());
+        mailSender.send(message);
+    }
+
 }

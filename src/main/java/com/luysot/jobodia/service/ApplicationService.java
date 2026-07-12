@@ -1,6 +1,7 @@
 package com.luysot.jobodia.service;
 
 import com.luysot.jobodia.dto.ApplicationDTOs.ApplicationRequestDto;
+import com.luysot.jobodia.dto.ApplicationDTOs.ApplicationNotifyRequestDto;
 import com.luysot.jobodia.dto.ApplicationDTOs.ApplicationResponseDto;
 import com.luysot.jobodia.dto.ApplicationDTOs.UpdateApplicationStatusRequestDto;
 import com.luysot.jobodia.exception.DuplicateResourceException;
@@ -27,6 +28,7 @@ public class ApplicationService {
     private final SeekerCoverLetterRepository seekerCoverLetterRepository;
     private final ApplicationMapper applicationMapper;
     private final EmployerProfileRepository employerProfileRepository;
+    private final EmailService emailService;
 
     @Transactional
     public ApplicationResponseDto apply(String email, ApplicationRequestDto dto){
@@ -104,6 +106,20 @@ public class ApplicationService {
         applicationRepository.save(application);
 
         return applicationMapper.toDto(application);
+    }
+
+    @Transactional
+    public void notifyApplicant(Long applicationId, ApplicationNotifyRequestDto request, String email) {
+        EmployerProfiles employer = getEmployerProfiles(email);
+        Applications application = applicationRepository.findByJobEmployerId_AndId(employer.getId(), applicationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Applicant not found"));
+
+        String seekerEmail = application.getSeeker().getUser().getEmail();
+        String body = request.message()
+                + "\n\nJob: " + application.getJob().getTitle()
+                + "\nCompany: " + application.getJob().getEmployer().getCompanyName();
+
+        emailService.sendApplicationNotification(seekerEmail, request.subject(), body);
     }
 
 

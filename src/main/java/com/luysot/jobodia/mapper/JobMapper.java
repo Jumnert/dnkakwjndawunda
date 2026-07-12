@@ -3,6 +3,7 @@ package com.luysot.jobodia.mapper;
 import com.luysot.jobodia.dto.JobDTOs.JobResponseDto;
 import com.luysot.jobodia.exception.ResourceNotFoundException;
 import com.luysot.jobodia.model.*;
+import com.luysot.jobodia.model.enums.JobStatus;
 import com.luysot.jobodia.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ public class JobMapper {
                 .jobLevel(job.getJobLevel())
                 .jobGender(job.getJobGender())
                 .jobSite(job.getJobSite())
+                .status(job.getStatus() == null ? JobStatus.DRAFT : job.getStatus())
                 .yearsOfExperience(job.getYearsOfExperience())
                 .languages(job.getLanguage())
                 .qualifications(job.getQualification())
@@ -70,6 +72,7 @@ public class JobMapper {
                 .jobLevel(response.jobLevel())
                 .jobGender(response.jobGender())
                 .jobSite(response.jobSite())
+                .status(response.status() == null ? JobStatus.DRAFT : response.status())
                 .yearsOfExperience(response.yearsOfExperience())
                 .language(response.languages())
                 .qualification(response.qualifications())

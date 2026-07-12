@@ -1,6 +1,7 @@
 package com.luysot.jobodia.controller;
 
 import com.luysot.jobodia.dto.ApplicationDTOs.ApplicationRequestDto;
+import com.luysot.jobodia.dto.ApplicationDTOs.ApplicationNotifyRequestDto;
 import com.luysot.jobodia.dto.ApplicationDTOs.ApplicationResponseDto;
 import com.luysot.jobodia.dto.ApplicationDTOs.UpdateApplicationStatusRequestDto;
 import com.luysot.jobodia.service.ApplicationService;
@@ -74,5 +75,16 @@ public class ApplicationController {
             @Valid @RequestBody UpdateApplicationStatusRequestDto reqStatus,
             Authentication authentication){
         return ResponseEntity.ok(applicationService.updateApplicationStatus(id,reqStatus,authentication.getName()));
+    }
+
+    @PostMapping({"/{id}/notify", "/applicants/{id}/notify"})
+    @PreAuthorize("hasRole('EMPLOYER')")
+    ResponseEntity<Void> notifyApplicant(
+            @PathVariable @Positive(message = "Application id must be positive") Long id,
+            @Valid @RequestBody ApplicationNotifyRequestDto request,
+            Authentication authentication
+    ) {
+        applicationService.notifyApplicant(id, request, authentication.getName());
+        return ResponseEntity.noContent().build();
     }
 }
