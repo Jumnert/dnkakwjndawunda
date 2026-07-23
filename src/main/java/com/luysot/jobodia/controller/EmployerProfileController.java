@@ -42,15 +42,15 @@ public class EmployerProfileController {
         return ResponseEntity.ok(employerProfileService.findOwnProfile(authentication.getName()));
     }
 
-    @PutMapping("/me")
-    @PreAuthorize("hasRole('EMPLOYER')")
-    ResponseEntity<EmployerProfileResponseDto> updateMyProfile(
-            @Valid @RequestPart(name = "profile") EmployerProfileRequestDto dto,
-            @RequestPart(name = "file", required = false) MultipartFile file,
-            Authentication authentication
-    ) throws IOException {
-        return ResponseEntity.ok(employerProfileService.updateOwnProfile(dto, file, authentication.getName()));
-    }
+//    @PutMapping("/me")
+//    @PreAuthorize("hasRole('EMPLOYER')")
+//    ResponseEntity<EmployerProfileResponseDto> updateMyProfile(
+//            @Valid @RequestPart(name = "profile") EmployerProfileRequestDto dto,
+//            @RequestPart(name = "file", required = false) MultipartFile file,
+//            Authentication authentication
+//    ) throws IOException {
+//        return ResponseEntity.ok(employerProfileService.updateOwnProfile(dto, file, authentication.getName()));
+//    }
 
     @GetMapping("/me/logo")
     @PreAuthorize("hasRole('EMPLOYER')")

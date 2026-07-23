@@ -49,27 +49,27 @@ public class SeekerProfileController {
         return ResponseEntity.status(HttpStatus.CREATED).body(seekerProfileService.createProfile(dto,file,authentication.getName()));
     }
 
-    @GetMapping("/picture")
-    @PreAuthorize("hasRole('SEEKER')")
-    ResponseEntity<Resource> viewProfilePicture(
-            Authentication authentication
-    ) throws MalformedURLException, FileNotFoundException {
-
-        Resource resource = seekerProfileService.viewSeekerProfilePicture(authentication.getName());
-
-        Users user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-
-        SeekerProfiles seekerProfile = seekerProfileRepository
-                .findByUser(user)
-                .orElseThrow(() -> new ResourceNotFoundException("Seeker profile not found"));
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(
-                        seekerProfile.getProfilePictureContentType()
-                ))
-                .body(resource);
-    }
+//    @GetMapping("/picture")
+//    @PreAuthorize("hasRole('SEEKER')")
+//    ResponseEntity<Resource> viewProfilePicture(
+//            Authentication authentication
+//    ) throws MalformedURLException, FileNotFoundException {
+//
+//        Resource resource = seekerProfileService.viewSeekerProfilePicture(authentication.getName());
+//
+//        Users user = userRepository.findByEmail(authentication.getName())
+//                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+//
+//        SeekerProfiles seekerProfile = seekerProfileRepository
+//                .findByUser(user)
+//                .orElseThrow(() -> new ResourceNotFoundException("Seeker profile not found"));
+//
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.parseMediaType(
+//                        seekerProfile.getProfilePictureContentType()
+//                ))
+//                .body(resource);
+//    }
 
     @PostMapping("/skills")
     @PreAuthorize("hasRole('SEEKER')")

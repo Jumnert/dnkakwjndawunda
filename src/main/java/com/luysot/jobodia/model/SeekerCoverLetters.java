@@ -23,8 +23,8 @@ public class SeekerCoverLetters {
 
     @Column(name = "coverLetter")
     private String coverLetterUrl;
-    @Column(name = "coverLetter_stored_name")
-    private String coverLetterStoredName;
+    @Column(name = "coverLetter_public_id")
+    private String coverLetterPublicId;
     @Column(name = "coverLetter_original_name")
     private String coverLetterOriginalName;
     @Column(name = "coverLetter_content_type")

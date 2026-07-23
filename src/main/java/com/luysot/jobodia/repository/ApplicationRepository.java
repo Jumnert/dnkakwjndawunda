@@ -7,9 +7,11 @@ import com.luysot.jobodia.model.SeekerProfiles;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface ApplicationRepository extends JpaRepository<Applications, Long> {
     Page<Applications> findBySeeker(SeekerProfiles seeker, Pageable pageable);
     Optional<Applications> findByIdAndSeeker(Long id, SeekerProfiles seeker);

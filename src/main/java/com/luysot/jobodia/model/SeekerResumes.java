@@ -26,8 +26,8 @@ public class SeekerResumes {
 
     @Column(name = "resume")
     private String resumeUrl;
-    @Column(name = "resume_stored_name")
-    private String resumeStoredName;
+    @Column(name = "resume_public_id")
+    private String resumePublicId;
     @Column(name = "resume_original_name")
     private String resumeOriginalName;
     @Column(name = "resume_content_type")

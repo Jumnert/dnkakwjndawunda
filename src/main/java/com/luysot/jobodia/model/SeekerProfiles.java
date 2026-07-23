@@ -23,8 +23,8 @@ public class SeekerProfiles {
 
     @Column(name = "profile_picture")
     private String profilePictureUrl;
-    @Column(name = "profile_picture_stored_name")
-    private String profilePictureStoredName;
+    @Column(name = "profile_picture_public_id")
+    private String profilePicturePublicId;
     @Column(name = "profile_picture_original_name")
     private String profilePictureOriginalName;
     @Column(name = "profile_picture_content_type")

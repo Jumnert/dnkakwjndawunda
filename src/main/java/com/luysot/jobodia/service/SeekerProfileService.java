@@ -1,5 +1,7 @@
 package com.luysot.jobodia.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerProfileRequestDto;
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerProfileResponseDto;
 import com.luysot.jobodia.dto.SeekerProfileDTOs.SeekerSkillsRequestDto;
@@ -41,6 +43,7 @@ public class SeekerProfileService {
     private final UserRepository userRepository;
     private final SkillRepository skillRepository;
     private final SkillMapper skillMapper;
+    private final Cloudinary cloudinary;
 
     private static final List<String> ALLOWED_TYPES = List.of(
             "image/jpeg",
@@ -93,50 +96,49 @@ public class SeekerProfileService {
                 throw new InvalidRequestException("Only image files are allowed.");
             }
 
-            String uploadDir = "uploads/seeker-profiles/" + user.getUsername();
-            String originalName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
-            File dir = new File(uploadDir);
+            try{
+                String uploadDir = "seeker-profile/" + user.getUsername() + "/profiles";
+                Map<?,?> result = cloudinary.uploader().upload(
+                        file.getBytes(),
+                        ObjectUtils.asMap("folder", uploadDir)
+                );
 
-            if(!dir.exists()) dir.mkdirs();
-
-            Path uploadPath = Paths.get(uploadDir);
-            String storedName = UUID.randomUUID() + "_" + "(" + user.getUsername() + ")" +originalName;
-            Path path = uploadPath.resolve(storedName);
-
-            file.transferTo(path);
-
-            seekerProfile.setProfilePictureContentType(contentType);
-            seekerProfile.setProfilePictureOriginalName(originalName);
-            seekerProfile.setProfilePictureStoredName(storedName);
-            seekerProfile.setProfilePictureUrl("/api/v1/seeker-profiles/" + user.getId() + "/profile-picture");
+                seekerProfile.setProfilePictureOriginalName(file.getOriginalFilename());
+                seekerProfile.setProfilePicturePublicId(result.get("public_id").toString());
+                seekerProfile.setProfilePictureUrl(result.get("secure_url").toString());
+                seekerProfile.setProfilePictureContentType(contentType);
+            }
+            catch (Exception e){
+                throw new RuntimeException(e);
+            }
         }
 
         SeekerProfiles savedProfile = seekerProfileRepository.save(seekerProfile);
         return seekerProfileMapper.toDto(savedProfile);
     }
 
-    public Resource viewSeekerProfilePicture(String email) throws FileNotFoundException, MalformedURLException {
-        Users user = userRepository.findByEmail(email).orElseThrow(()->new ResourceNotFoundException("User not found"));
-        SeekerProfiles seekerProfiles = seekerProfileRepository.findByUser(user).orElseThrow(()->new ResourceNotFoundException("Seeker profile not found"));
-
-        String storedName = seekerProfiles.getProfilePictureStoredName();
-
-
-        if (storedName == null || storedName.isBlank()) {
-            throw new FileNotFoundException("Profile picture not found");
-        }
-
-        Path path = Paths.get("uploads")
-                .resolve("seeker-profiles")
-                .resolve(user.getUsername())
-                .resolve(storedName);
-
-        if (!Files.exists(path)) {
-            throw new FileNotFoundException("Profile picture file not found");
-        }
-
-        return new UrlResource(path.toUri());
-    }
+//    public Resource viewSeekerProfilePicture(String email) throws FileNotFoundException, MalformedURLException {
+//        Users user = userRepository.findByEmail(email).orElseThrow(()->new ResourceNotFoundException("User not found"));
+//        SeekerProfiles seekerProfiles = seekerProfileRepository.findByUser(user).orElseThrow(()->new ResourceNotFoundException("Seeker profile not found"));
+//
+//        String storedName = seekerProfiles.getProfilePictureStoredName();
+//
+//
+//        if (storedName == null || storedName.isBlank()) {
+//            throw new FileNotFoundException("Profile picture not found");
+//        }
+//
+//        Path path = Paths.get("uploads")
+//                .resolve("seeker-profiles")
+//                .resolve(user.getUsername())
+//                .resolve(storedName);
+//
+//        if (!Files.exists(path)) {
+//            throw new FileNotFoundException("Profile picture file not found");
+//        }
+//
+//        return new UrlResource(path.toUri());
+//    }
 
     public SeekerSkillsResponseDto addSeekerSkills(String email, SeekerSkillsRequestDto dto) {
         Users user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found"));

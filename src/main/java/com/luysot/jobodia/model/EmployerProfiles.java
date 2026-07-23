@@ -21,8 +21,8 @@ public class EmployerProfiles {
 
     @Column(name = "company_logo")
     private String companyLogoUrl;
-    @Column(name = "company_logo_stored_name")
-    private String companyLogoStoredName;
+    @Column(name = "company_logo_public_id")
+    private String companyLogoPublicId;
     @Column(name = "company_logo_original_name")
     private String companyLogoOriginalName;
     @Column(name = "company_logo_content_type")
